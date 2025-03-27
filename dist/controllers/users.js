@@ -42,7 +42,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUserById = exports.updateUserById = exports.login = exports.getUserById = exports.createUser = void 0;
+exports.deleteUserById = exports.updateUserById = exports.login = exports.getUserByEmail = exports.getUserById = exports.createUser = void 0;
 const userService = __importStar(require("../services/user"));
 const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -68,6 +68,25 @@ const getUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.getUserById = getUserById;
+const getUserByEmail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        if (!req.query.email) {
+            res.status(403).json({ message: 'Malformed URL' });
+            return;
+        }
+        const email = (typeof (req.query.email) === 'string') ? req.query.email : '';
+        const users = yield userService.getUserByEmail(email);
+        if (users.length === 0) {
+            res.status(200).send([]);
+            return;
+        }
+        res.status(200).json(users);
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+exports.getUserByEmail = getUserByEmail;
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = yield userService.getUserByEmailPassword(req.body.email, req.body.password);

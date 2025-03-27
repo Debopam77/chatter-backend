@@ -8,6 +8,16 @@ export const createUser = async (userData: UserDocument): Promise<UserDocument> 
 export const getUserById = async(userId: string): Promise<UserDocument | null> => {
     return UserModel.findById(userId).exec();
 }
+export const getUserByEmail = async(email: string): Promise<[]> => {
+    let result: any = [];
+    const users: UserDocument[] = await UserModel.find({email: {$regex: email, $options: "i"}}).lean();
+
+    if(users.length > 0) {
+        result = users.map((user) => ({username: user.username, _id: user._id, email: user.email}));
+    }
+
+    return result;
+}
 
 export const getUserByEmailPassword = async(email: string, password: string): Promise<any|null> => {
     const user: UserDocument|null = await UserModel.findOne({email: email}).select('+password');

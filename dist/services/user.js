@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUserById = exports.deleteUserById = exports.getUserByEmailPassword = exports.getUserById = exports.createUser = void 0;
+exports.updateUserById = exports.deleteUserById = exports.getUserByEmailPassword = exports.getUserByEmail = exports.getUserById = exports.createUser = void 0;
 const User_1 = require("../models/User");
 const createUser = (userData) => __awaiter(void 0, void 0, void 0, function* () {
     const user = new User_1.UserModel(userData);
@@ -20,6 +20,15 @@ const getUserById = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     return User_1.UserModel.findById(userId).exec();
 });
 exports.getUserById = getUserById;
+const getUserByEmail = (email) => __awaiter(void 0, void 0, void 0, function* () {
+    let result = [];
+    const users = yield User_1.UserModel.find({ email: { $regex: email, $options: "i" } }).lean();
+    if (users.length > 0) {
+        result = users.map((user) => ({ username: user.username, _id: user._id, email: user.email }));
+    }
+    return result;
+});
+exports.getUserByEmail = getUserByEmail;
 const getUserByEmailPassword = (email, password) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield User_1.UserModel.findOne({ email: email }).select('+password');
     if (user) {

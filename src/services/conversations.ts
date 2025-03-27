@@ -1,9 +1,17 @@
 import {ConversationsDocument, ConversationsModel} from '../models/Conversations';
 import mongoose from 'mongoose';
 
-export const createConversation = async (userData: ConversationsDocument): Promise<ConversationsDocument> => {
-    const user = new ConversationsModel(userData);
-    return user.save();
+export const createConversation = async (userData: ConversationsDocument): Promise<ConversationsDocument|null> => {
+    const conversations: ConversationsDocument[] = await ConversationsModel.find({
+        type: 'private', 
+        participants: { $all: [userData.participants[0], userData.participants[1]], $size: 2 } }).lean();
+    if(conversations.length === 0) {
+        // Existing record not found
+        const conversation = new ConversationsModel(userData);
+        return conversation.save();
+    } else {
+        return conversations[0];
+    }
 }
 
 export const getConversationsByUserId = async(userId: string): Promise<ConversationsDocument[] | null> => {

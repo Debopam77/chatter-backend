@@ -47,6 +47,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const userController = __importStar(require("../controllers/users"));
+const auth_1 = require("../middleware/auth");
 const router = express_1.default.Router();
 router.post('/user/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield userController.createUser(req, res);
@@ -54,13 +55,19 @@ router.post('/user/', (req, res) => __awaiter(void 0, void 0, void 0, function* 
 router.post('/user/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield userController.login(req, res);
 }));
-router.get('/user/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    yield userController.getUserById(req, res);
+router.get('/user', auth_1.authenticator, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
+    if ((_a = req.query) === null || _a === void 0 ? void 0 : _a.id) {
+        yield userController.getUserById(req, res);
+    }
+    else if ((_b = req.query) === null || _b === void 0 ? void 0 : _b.email) {
+        yield userController.getUserByEmail(req, res);
+    }
 }));
-router.put('/user/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.put('/user/:id', auth_1.authenticator, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield userController.updateUserById(req, res);
 }));
-router.delete('/user/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.delete('/user/:id', auth_1.authenticator, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield userController.deleteUserById(req, res);
 }));
 exports.default = router;

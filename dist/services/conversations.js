@@ -16,8 +16,18 @@ exports.getConversationById = exports.deleteConversationById = exports.getConver
 const Conversations_1 = require("../models/Conversations");
 const mongoose_1 = __importDefault(require("mongoose"));
 const createConversation = (userData) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = new Conversations_1.ConversationsModel(userData);
-    return user.save();
+    const conversations = yield Conversations_1.ConversationsModel.find({
+        type: 'private',
+        participants: { $all: [userData.participants[0], userData.participants[1]], $size: 2 }
+    }).lean();
+    if (conversations.length === 0) {
+        // Existing record not found
+        const conversation = new Conversations_1.ConversationsModel(userData);
+        return conversation.save();
+    }
+    else {
+        return conversations[0];
+    }
 });
 exports.createConversation = createConversation;
 const getConversationsByUserId = (userId) => __awaiter(void 0, void 0, void 0, function* () {

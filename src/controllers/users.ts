@@ -1,5 +1,6 @@
 import {Request, Response} from 'express';
 import * as userService from '../services/user';
+import { UserDocument } from '../models/User';
 
 export const createUser = async (req: Request, res: Response) => {
     try {
@@ -18,6 +19,24 @@ export const getUserById = async (req: Request, res: Response) => {
             return;
         }
         res.status(200).json(user);
+    }catch (error: any) {
+        res.status(500).json({message: error.message});
+    }
+};
+
+export const getUserByEmail = async (req: Request, res: Response) => {
+    try {
+        if(!req.query.email) {
+            res.status(403).json({message: 'Malformed URL'});
+            return;
+        }
+        const email: string = (typeof(req.query.email) === 'string') ? req.query.email : '' ;
+        const users: [] = await userService.getUserByEmail(email);
+        if(users.length === 0) {
+            res.status(200).send([]);
+            return;
+        }
+        res.status(200).json(users);
     }catch (error: any) {
         res.status(500).json({message: error.message});
     }
