@@ -77,7 +77,7 @@ const getUserByEmail = (req, res) => __awaiter(void 0, void 0, void 0, function*
         const email = (typeof (req.query.email) === 'string') ? req.query.email : '';
         const users = yield userService.getUserByEmail(email);
         if (users.length === 0) {
-            res.status(200).send([]);
+            res.status(404).send([]);
             return;
         }
         res.status(200).json(users);

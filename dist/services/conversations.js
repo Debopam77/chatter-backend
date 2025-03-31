@@ -34,7 +34,7 @@ const getConversationsByUserId = (userId) => __awaiter(void 0, void 0, void 0, f
     try {
         const conversations = yield Conversations_1.ConversationsModel.find({
             participants: { $in: [new mongoose_1.default.Types.ObjectId(userId)] }
-        }).populate('participants');
+        }).populate('participants').sort({ updatedAt: -1 });
         return conversations;
     }
     catch (error) {

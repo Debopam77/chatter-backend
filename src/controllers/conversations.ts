@@ -1,9 +1,18 @@
 import {Request, Response} from 'express';
 import * as conversationsService from '../services/conversations';
+import {io} from '../index';
 
 export const createConversation = async (req: Request, res: Response) => {
     try {
+        // Magic should happen here, we need to emit the fact that a new message
         const conversation = await conversationsService.createConversation(req.body);
+        if(conversation) {
+            await conversation.populate('participants');
+            conversation.participants.forEach((participant) => {
+                console.log("Emiting new convo...");
+                io.emit('newConversation', conversation);
+            });
+        }
         res.status(201).json(conversation);
     }catch (error: any) {
         res.status(500).json({message: error.message});

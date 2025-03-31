@@ -18,7 +18,7 @@ export const getConversationsByUserId = async(userId: string): Promise<Conversat
     try {
         const conversations = await ConversationsModel.find({
             participants: { $in: [new mongoose.Types.ObjectId(userId)]}
-        }).populate('participants');
+        }).populate('participants').sort({updatedAt: -1});
 
         return conversations;
     } catch(error) {

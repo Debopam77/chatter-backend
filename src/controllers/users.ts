@@ -33,7 +33,7 @@ export const getUserByEmail = async (req: Request, res: Response) => {
         const email: string = (typeof(req.query.email) === 'string') ? req.query.email : '' ;
         const users: [] = await userService.getUserByEmail(email);
         if(users.length === 0) {
-            res.status(200).send([]);
+            res.status(404).send([]);
             return;
         }
         res.status(200).json(users);

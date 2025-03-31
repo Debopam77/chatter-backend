@@ -44,9 +44,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteConversationById = exports.getConversationById = exports.getConversationsByUserId = exports.createConversation = void 0;
 const conversationsService = __importStar(require("../services/conversations"));
+const index_1 = require("../index");
 const createConversation = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        // Magic should happen here, we need to emit the fact that a new message
         const conversation = yield conversationsService.createConversation(req.body);
+        if (conversation) {
+            yield conversation.populate('participants');
+            conversation.participants.forEach((participant) => {
+                console.log("Emiting new convo...");
+                index_1.io.emit('newConversation', conversation);
+            });
+        }
         res.status(201).json(conversation);
     }
     catch (error) {
